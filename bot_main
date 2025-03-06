@@ -7,4 +7,6 @@ if __name__ == '__main__':
     session = VkBot(access_token=os.getenv('VKTOKEN'))
     search_result = session.search_users(age=18, sex=1, hometown='москва')['response']['items']
     for profile in search_result:
+        profile_pic_list = session.get_profile_pics_list(user_id=profile['id'])
         print(profile)
+        session.download_photo(user_id=profile['id'])

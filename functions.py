@@ -1,4 +1,5 @@
 import requests as r
+from time import sleep
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -42,6 +43,7 @@ class VkBot:
                 size_type = self.highest_resolution(photo)
                 for elem in photo['sizes']:
                     if elem['type'] == size_type:
-                        r.get(elem['url'])
+                        with open(f'{photo["id"]}.jpg', 'wb+') as f:
+                            f.write(r.get(elem['url']).content)
         except:
             print('Программа завершена с ошибкой. Возможно отсутствует доступ к запрошенному профилю.')
