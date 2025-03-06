@@ -1,0 +1,10 @@
+import os
+from functions import VkBot
+
+
+if __name__ == '__main__':
+
+    session = VkBot(access_token=os.getenv('VKTOKEN'))
+    search_result = session.search_users(age=18, sex=1, hometown='москва')['response']['items']
+    for profile in search_result:
+        print(profile)
