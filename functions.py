@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+
 class VkBot:
     def __init__(self, access_token, api_version=5.199):
         self.base_url = 'https://api.vk.com/method/'
@@ -25,10 +26,19 @@ class VkBot:
 
     def get_profile_pics_list(self, user_id):
             params = self.params
+            items = []
             params.update({'user_id': user_id, 'album_id': 'profile',
-                           'extended': 1, 'photo_sizes': 1, 'count': 3})
+                           'extended': 1, 'photo_sizes': 1})
             response = r.get(f'{self.base_url}photos.get', params=params)
-            return response.json()
+            items += response.json()['response']['items']
+# Пока не понял, надо ли обрабатывать 'next_from' в ответе, этот кусок кода можно подключить
+# если ВК будет обрезать присылаемый перечень фоток профиля.
+            # if 'next_from' in response.json()['response'].keys() != '':
+            #     params.update({'start_from': 'next_from'})
+            #     response = r.get(f'{self.base_url}photos.get', params=params)
+            #     print(response.json())
+            #     items += response.json()['response']['items']
+            return sorted(items, key=lambda x: x['likes']['count'], reverse=True)[:3]
 
     def highest_resolution(self, photo):
         size_priority = ['w', 'z', 'y', 'r', 'q', 'p', 'o', 'x', 'm', 's']
@@ -37,9 +47,9 @@ class VkBot:
         return size_type[0]
 
     def download_photo(self, user_id):
-        response = self.get_profile_pics_list(user_id)
+        profile_pics_list = self.get_profile_pics_list(user_id)
         try:
-            for photo in response['response']['items']:
+            for photo in profile_pics_list:
                 size_type = self.highest_resolution(photo)
                 for elem in photo['sizes']:
                     if elem['type'] == size_type:
