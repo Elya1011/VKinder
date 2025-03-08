@@ -7,7 +7,7 @@ if __name__ == '__main__':
 
     session = VkBot(access_token=os.getenv('VKTOKEN'))
 
-    search_result = session.search_users(age=22, sex=1, city='')
+    search_result = session.search_users(age=22, sex=1, city='Новосибирск')
 
     for profile in search_result:
         print(profile['id'])
