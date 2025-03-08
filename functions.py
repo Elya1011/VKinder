@@ -13,16 +13,31 @@ class VkBot:
             'v': api_version
         }
 
-    def search_users(self, age=18, sex=0, hometown='Москва'):
+    def get_city_id(self, city_name):
         params = self.params
         params.update({
-            'hometown': hometown,
+            'q': city_name,
+            'need_all': 0,
+            'count': 1
+            })
+        response = r.get(f'{self.base_url}database.getCities', params=params)
+        return response.json()['response']['items'][0]['id']
+
+    def search_users(self, age=18, sex=0, city='Москва'):
+        params = self.params
+        params.update({
+            'sort': 0,
+            'count': 1000,
+            'city_id': self.get_city_id(city),
             'sex': sex,
             'age_from': age,
-            'age_to': age
-            })
+            'age_to': age,
+            'has_photo': 1,
+            'fields': 'verified'
+              })
         response = r.get(f'{self.base_url}users.search', params=params)
-        return response.json()
+        search_result = [c for c in response.json()['response']['items'] if c['is_closed']==False]
+        return search_result
 
     def get_profile_pics_list(self, user_id):
             params = self.params
@@ -31,14 +46,9 @@ class VkBot:
                            'extended': 1, 'photo_sizes': 1})
             response = r.get(f'{self.base_url}photos.get', params=params)
             items += response.json()['response']['items']
-# Пока не понял, надо ли обрабатывать 'next_from' в ответе, этот кусок кода можно подключить
-# если ВК будет обрезать присылаемый перечень фоток профиля.
-            # if 'next_from' in response.json()['response'].keys() != '':
-            #     params.update({'start_from': 'next_from'})
-            #     response = r.get(f'{self.base_url}photos.get', params=params)
-            #     print(response.json())
-            #     items += response.json()['response']['items']
-            return sorted(items, key=lambda x: x['likes']['count'], reverse=True)[:3]
+            filtered_bad_links = [item for item in items if item['sizes'] != []]
+            return sorted(filtered_bad_links, key=lambda x: x['likes']['count'], reverse=True)[:3]
+
 
     def highest_resolution(self, photo):
         size_priority = ['w', 'z', 'y', 'r', 'q', 'p', 'o', 'x', 'm', 's']
@@ -57,3 +67,14 @@ class VkBot:
                             f.write(r.get(elem['url']).content)
         except:
             print('Программа завершена с ошибкой. Возможно отсутствует доступ к запрошенному профилю.')
+
+    def get_photo_links(self, user_id):
+        profile_pics_list = self.get_profile_pics_list(user_id)
+        links = []
+        for photo in profile_pics_list:
+            size_type = self.highest_resolution(photo)
+            for elem in photo['sizes']:
+                if elem['type'] == size_type:
+                    links.append(elem['url'])
+                    sleep(0.2)
+        return links
