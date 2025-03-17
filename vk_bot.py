@@ -1,4 +1,5 @@
 import vk_api, os, json
+from keyboards import keyboard_2
 from dotenv import load_dotenv
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 load_dotenv()
@@ -11,6 +12,8 @@ vk_session = vk_api.VkApi(token=TOKEN)
 longpoll = VkBotLongPoll(vk_session, group_id=GROUP_ID)
 vk = vk_session.get_api()
 
+data_search = {}
+
 
 def send_message(user_id, message):
     keyboard = {
@@ -21,16 +24,16 @@ def send_message(user_id, message):
                 {
                     'action': {
                         'type': 'text',
-                        'label': 'Next'
+                        'label': 'мужчины'
                     },
                     'color': 'positive'
                 },
                 {
                     'action': {
                         'type': 'text',
-                        'label': 'Stop'
+                        'label': 'девушки'
                     },
-                    'color': 'negative'
+                    'color': 'positive'
                 }
 
             ]
@@ -43,7 +46,13 @@ def send_message(user_id, message):
         keyboard=json.dumps(keyboard)
     )
 
-
+def message_2(user_id, message):
+    vk.messages.send(
+        user_id=user_id,
+        message=message,
+        random_id=0,  # Уникальный идентификатор сообщения
+        keyboard=json.dumps(keyboard_2)
+    )
 
 
 
@@ -57,9 +66,10 @@ if __name__ == "__main__":
             user_id = msg['from_id']
             text = msg['text'].lower()
 
-            if text == 'привет':
-                send_message(user_id, 'Привет! Чем могу помочь?')
-            elif text == 'пока':
-                send_message(user_id, 'Пока')
+            if text == 'старт':
+                send_message(user_id, 'Привет! Выберите пол')
+
+            elif text == 'девушки' or text == 'мужчины':
+                message_2(user_id, 'Выберите нужный диапазон возраста')
 
 
