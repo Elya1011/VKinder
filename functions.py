@@ -23,15 +23,15 @@ class VkBot:
         response = r.get(f'{self.base_url}database.getCities', params=local_params)
         return response.json()['response']['items'][0]['id']
 
-    def search_users(self, age=18, sex=0, city='Москва'):
+    def search_users(self, age_from=18, age_to=18, sex=0, city='Москва'):
         local_params = self.params | \
         {
         'sort': 0,
         'count': 1000,
         'city_id': self.get_city_id(city),
         'sex': sex,
-        'age_from': age,
-        'age_to': age,
+        'age_from': age_from,
+        'age_to': age_to,
         'has_photo': 1,
         'fields': 'verified'
         }
