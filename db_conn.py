@@ -15,9 +15,7 @@ db_port = config['Tokens']["db_port_token"]
 def get_db_connection():
     """Создаёт и возвращает подключение к базе данных."""
     return psycopg2.connect(
-        dbname=db_name, 
+        database=db_name,
         user=db_user, 
-        password=db_password, 
-        host=db_host, 
-        port=db_port
+        password=db_password
     )
