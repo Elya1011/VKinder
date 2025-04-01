@@ -45,7 +45,7 @@ def create_db():
 
 
 # Добавление пользователя
-def ensure_user_exists(user_id):
+def save_user_id(user_id):
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
