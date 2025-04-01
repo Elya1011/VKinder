@@ -90,7 +90,7 @@ def adding_dark_list(user_id, user_id_dark):
             )
 
 
-# Выод избранных пользователей
+# Вывод избранных пользователей
 def display_of_favorite_users(user_id):
     with get_db_connection() as conn:
         with conn.cursor() as cur:
