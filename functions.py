@@ -47,8 +47,10 @@ class VkBot:
                            'extended': 1,
                            'photo_sizes': 1})
             response = r.get(f'{self.base_url}photos.get', params=params)
+            print(response.json())
             items += response.json()['response']['items']
             filtered_bad_links = [item for item in items if item['sizes'] != []]
+            print(sorted(filtered_bad_links, key=lambda x: x['likes']['count'], reverse=True)[:3])
             return sorted(filtered_bad_links, key=lambda x: x['likes']['count'], reverse=True)[:3]
 
     def highest_resolution(self, photo):
@@ -89,7 +91,7 @@ class VkBot:
             profile_link = f'https://vk.com/id{profile["id"]}'
             pics_list = self.get_photo_links(user_id=profile['id'])
             print(profile_id, profile_name, profile_link, pics_list)
-
             # adding_favorite_users(profile_id, profile_name, profile_link, pics_list[0])
 
             sleep(0.1)
+            break
