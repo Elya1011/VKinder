@@ -48,6 +48,7 @@ keyboard_1 = {
 }
 
 keyboard_2 = {
+    "one_time": True,
     "buttons": [
         [  # Первая строка
             {"action": {"type": "text", "label": "18-25"}, "color": "primary"},

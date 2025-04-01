@@ -1,8 +1,8 @@
 import requests as r
 from time import sleep
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()
 
 
 class VkBot:
@@ -79,3 +79,17 @@ class VkBot:
                     links.append(elem['url'])
                     sleep(0.2)
         return links
+
+    def save_search_result(self, search_request):
+        search_result = self.search_users(**search_request)
+
+        for profile in search_result:
+            profile_id = profile['id']
+            profile_name = f'{profile["first_name"]} {profile["last_name"]}'
+            profile_link = f'https://vk.com/id{profile["id"]}'
+            pics_list = self.get_photo_links(user_id=profile['id'])
+            print(profile_id, profile_name, profile_link, pics_list)
+
+            # adding_favorite_users(profile_id, profile_name, profile_link, pics_list[0])
+
+            sleep(0.1)
