@@ -55,9 +55,7 @@ def message_2(user_id, message):
     )
 
 
-
-
-if __name__ == "__main__":
+def bot_handler():
     print('бот работает')
 # Обработка событий
     for event in longpoll.listen():
