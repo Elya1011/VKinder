@@ -116,4 +116,4 @@ def display_of_favorite_users(user_id):
             return list_id
 
 # drop_db()
-create_db()
+# create_db()
