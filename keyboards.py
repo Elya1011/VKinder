@@ -25,7 +25,7 @@ keyboard_1 = {
       {
         "action": {
           "type": "text",
-          "label": "Удалить из избранного"
+          "label": "Добавить в чёрный список"
         },
         "color": "negative"
       }
