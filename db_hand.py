@@ -108,6 +108,12 @@ def display_of_favorite_users(user_id):
             """,
                 (user_id,)
             )
+            all_id = cur.fetchall()
+            list_id = []
+            for cor_id in all_id:
+                for id in cor_id:
+                    list_id.append(id)
+            return list_id
+
 # drop_db()
 create_db()
-# print(adding_favorite_users(223388613, 826975570))
