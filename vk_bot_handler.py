@@ -1,6 +1,6 @@
 import vk_api, os, json
 
-from db_hand import save_user_id
+from db_hand import save_user_id, adding_favorite_users
 from functions import VkBot
 from keyboards import keyboard_2, keyboard_1
 from dotenv import load_dotenv
@@ -108,12 +108,30 @@ def bot_handler():
                 del user_states[user_id]
                 user_search_results[user_id] = backend_session.search_users(**search_request)
                 user_states[user_id] = 0
+                current_result = user_search_results[user_id][user_states[user_id]]
+                message = f"{current_result['first_name']} {current_result['last_name']} https://vk.com/id{current_result['id']}"
                 attachments = backend_session.get_photo_links(
-                    user_search_results[user_id][user_states[user_id]]['id']
+                    current_result['id']
                 )
-                print(attachments)
-                display_result_message(user_id, 'lalala', attachments)
+                display_result_message(user_id, message, attachments)
 
-            elif user_id in user_states and user_states[user_id].isdigit():
-                display_result_message(user_id, 'lalala', ['photo826975570_457239018'])
+            elif user_id in user_states and isinstance(user_states[user_id], int) and \
+            text in ["дальше👉", "👈назад"]:
+                step = {"дальше👉": 1, "👈назад": -1}
+                user_states[user_id] += step[text]
+                current_result = user_search_results[user_id][user_states[user_id]]
+                message = f"{current_result['first_name']} {current_result['last_name']} https://vk.com/id{current_result['id']}"
+                attachments = backend_session.get_photo_links(
+                    current_result['id']
+                )
+                display_result_message(user_id, message, attachments)
 
+            elif user_id in user_states and isinstance(user_states[user_id], int) and \
+            text in ["добавить в избранное"]:
+                current_result = user_search_results[user_id][user_states[user_id]]
+                adding_favorite_users(user_id, current_result['id'])
+
+            elif user_id in user_states and isinstance(user_states[user_id], int) and \
+            text in ["удалить из избранного"]:
+                current_result = user_search_results[user_id][user_states[user_id]]
+                adding_favorite_users(user_id, current_result['id'])
