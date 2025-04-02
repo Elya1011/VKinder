@@ -103,7 +103,7 @@ def display_of_favorite_users(user_id):
         with conn.cursor() as cur:
             cur.execute(
                 """
-            SELECT name_and_surname_human, link_profile, photo FROM chosen_people
+            SELECT chosen_user_id FROM chosen_people
             WHERE user_id = %s
             """,
                 (user_id,)

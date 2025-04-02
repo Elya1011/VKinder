@@ -132,6 +132,6 @@ def bot_handler():
                 adding_favorite_users(user_id, current_result['id'])
 
             elif user_id in user_states and isinstance(user_states[user_id], int) and \
-            text in ["Добавить в черный список"]:
+            text in ["добавить в чёрный список"]:
                 current_result = user_search_results[user_id][user_states[user_id]]
                 adding_dark_list(user_id, current_result['id'])
