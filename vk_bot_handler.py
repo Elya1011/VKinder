@@ -73,11 +73,13 @@ def display_result_message(user_id: int, message: str, attachments: list):
         keyboard=json.dumps(keyboard_1)
     )
 
-# Логика взаимодействия пользователя с ботом. Вызывается в bot_main
+
 def bot_handler():
+    """Логика взаимодействия пользователя с ботом. Вызывается в bot_main"""
     user_states = {}
+    user_search_results = {}
     print('бот работает')
-# Обработка событий
+
     for event in longpoll.listen():
         if event.type == VkBotEventType.MESSAGE_NEW:
             msg = event.object.message
@@ -104,11 +106,14 @@ def bot_handler():
             elif user_id in user_states and user_states[user_id] == "waiting_for_input":
                 search_request['city'] = text
                 del user_states[user_id]
-                backend_session.save_search_result(search_request)
-                user_states[user_id] = "viewing_search_result"
-                display_result_message(user_id, 'lalala',
-                                   ['photo129938808_284519208'])
+                user_search_results[user_id] = backend_session.search_users(**search_request)
+                user_states[user_id] = 0
+                attachments = backend_session.get_photo_links(
+                    user_search_results[user_id][user_states[user_id]]['id']
+                )
+                print(attachments)
+                display_result_message(user_id, 'lalala', attachments)
 
-            elif user_id in user_states and user_states[user_id] == "viewing_search_result":
-                display_result_message(user_id, 'lalala', ['photo129938808_284519208'])
+            elif user_id in user_states and user_states[user_id].isdigit():
+                display_result_message(user_id, 'lalala', ['photo826975570_457239018'])
 
