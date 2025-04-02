@@ -1,6 +1,6 @@
 import vk_api, os, json
 
-from db_hand import save_user_id, adding_favorite_users
+from db_hand import save_user_id, adding_favorite_users, adding_dark_list
 from functions import VkBot
 from keyboards import keyboard_2, keyboard_1
 from dotenv import load_dotenv
@@ -132,6 +132,6 @@ def bot_handler():
                 adding_favorite_users(user_id, current_result['id'])
 
             elif user_id in user_states and isinstance(user_states[user_id], int) and \
-            text in ["удалить из избранного"]:
+            text in ["Добавить в черный список"]:
                 current_result = user_search_results[user_id][user_states[user_id]]
-                adding_favorite_users(user_id, current_result['id'])
+                adding_dark_list(user_id, current_result['id'])
