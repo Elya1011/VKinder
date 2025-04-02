@@ -39,6 +39,7 @@ class VkBot:
         }
         response = r.get(f'{self.base_url}users.search', params=local_params)
         search_result = [c for c in response.json()['response']['items'] if c['is_closed']==False]
+        print(search_result)
         return search_result
 
     def get_profile_pics_list(self, user_id) -> list:
@@ -50,10 +51,8 @@ class VkBot:
                        'extended': 1,
                        'photo_sizes': 1})
         response = r.get(f'{self.base_url}photos.get', params=params)
-        print(response.json())
         items += response.json()['response']['items']
         filtered_bad_links = [item for item in items if item['sizes'] != []]
-        print(sorted(filtered_bad_links, key=lambda x: x['likes']['count'], reverse=True)[:3])
         return sorted(filtered_bad_links, key=lambda x: x['likes']['count'], reverse=True)[:3]
 
     def get_photo_links(self, user_id) -> list:
@@ -63,19 +62,4 @@ class VkBot:
         for photo in profile_pics_list:
             links.append(f"photo{photo['owner_id']}_{photo['id']}")
             sleep(0.2)
-        print(links)
         return links
-
-    def save_search_result(self, search_request):
-        search_result = self.search_users(**search_request)
-
-        for profile in search_result:
-            profile_id = profile['id']
-            profile_name = f'{profile["first_name"]} {profile["last_name"]}'
-            profile_link = f'https://vk.com/id{profile["id"]}'
-            pics_list = self.get_photo_links(user_id=profile['id'])
-            print(profile_id, profile_name, profile_link, pics_list)
-            # adding_favorite_users(profile_id, profile_name, profile_link, pics_list[0])
-
-            sleep(0.1)
-            break
