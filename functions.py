@@ -22,7 +22,8 @@ class VkBot:
         'count': 1
         }
         response = r.get(f'{self.base_url}database.getCities', params=local_params)
-        return response.json()['response']['items'][0]['id']
+        if response.json()['response']['count'] != 0:
+            return response.json()['response']['items'][0]['id']
 
     def search_users(self, age_from=18, age_to=18, sex=0, city='Москва') -> list:
         """Возвращает список найденных результатов исключая закрытые страницы"""
@@ -39,8 +40,8 @@ class VkBot:
         }
         response = r.get(f'{self.base_url}users.search', params=local_params)
         search_result = [c for c in response.json()['response']['items'] if c['is_closed']==False]
-        print(search_result)
         return search_result
+
 
     def get_profile_pics_list(self, user_id) -> list:
         """Возврат сортированных по наибольшему числу лайков фотографий - до 3х штук"""

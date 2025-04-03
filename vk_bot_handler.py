@@ -74,7 +74,6 @@ def display_result_message(user_id: int, message: str, attachments: list = None)
     }
     if attachments:  # Добавляем attachment только если есть вложения
         params['attachment'] = ','.join(attachments)
-    print(params)
     vk.messages.send(**params)
 
 def bot_handler():
@@ -89,7 +88,6 @@ def bot_handler():
             user_id = msg['from_id']
             text = msg['text'].lower()
             save_user_id(user_id)
-            print(text)
 
             if text in ['старт', 'закончить поиск🚫']:
                 send_message(user_id, 'Привет! Выберите пол')
@@ -107,6 +105,7 @@ def bot_handler():
                 standard_keyboard_message(user_id, 'Введите город для поиска')
                 user_states[user_id] = "waiting_for_input"
 
+            # состояние ожидания текстового ввода названия города
             elif user_id in user_states and user_states[user_id] == "waiting_for_input":
                 search_request['city'] = text
                 del user_states[user_id]
@@ -117,14 +116,14 @@ def bot_handler():
                 attachments = backend_session.get_photo_links(
                     current_result['id']
                 )
-                print(attachments)
                 display_result_message(user_id, message, attachments)
 
+            # пролистывание карточек профилей
             elif user_id in user_states and isinstance(user_states[user_id], int) and \
             text in ["дальше👉", "👈назад"]:
                 step = {"дальше👉": 1, "👈назад": -1}
-                user_states[user_id] += step[text]
-                current_result = user_search_results[user_id][user_states[user_id]]
+                user_states[user_id] = (user_states[user_id] + step[text]) % len(user_search_results[user_id])
+                current_result: dict = user_search_results[user_id][user_states[user_id]]
                 message = f"{current_result['first_name']} {current_result['last_name']} https://vk.com/id{current_result['id']}"
                 attachments = backend_session.get_photo_links(
                     current_result['id']
@@ -145,5 +144,4 @@ def bot_handler():
             text in ["просмотреть избранное"]:
                 favourite_id_list = [f'https://vk.com/id{c}' for c in display_of_favorite_users(user_id)]
                 message = '\n'.join(favourite_id_list)
-                print(message)
                 display_result_message(user_id, message)
